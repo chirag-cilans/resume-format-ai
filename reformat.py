@@ -1,25 +1,21 @@
-import streamlit as st
-import pdfplumber
-from docx import Document
-from docx.shared import Pt, Inches
-from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.oxml.ns import qn
-from docx.oxml import OxmlElement
+import fitz
 import io
-import re
-from openai import OpenAI
-import tempfile
 import os
+import pdfplumber
+import re
+import streamlit as st
 import subprocess
-from docx2pdf import convert
-import fitz  # PyMuPDF
+import tempfile
 import win32com.client
 from bs4 import BeautifulSoup
 from docx import Document
-from docx.shared import Pt, Inches, RGBColor, Cm
-from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.table import WD_ALIGN_VERTICAL
-import os
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
+from docx.shared import Cm, Inches, Pt, RGBColor
+from docx2pdf import convert
+from openai import OpenAI
 
 
 # Initialize the OpenAI client
@@ -41,7 +37,22 @@ def clean_text(text):
     return text.strip()
 
 
-def reformat_resume(content):
+def wrap_keywords_in_b_tags(text, keywords):
+    # Sort keywords by length in descending order to avoid partial replacements
+    keywords = sorted(keywords, key=len, reverse=True)
+
+    for keyword in keywords:
+        # Use re.sub with a lambda to replace the matched keyword with <b>wrapped keyword</b>, ignoring case
+        text = re.sub(
+            f"(?i)({re.escape(keyword)})",
+            lambda match: f"<b>{match.group(0)}</b>",
+            text,
+        )
+
+    return text
+
+
+def reformat_resume(content, keywords):
     Format = """
 <!DOCTYPE html>
 <html lang="en">
@@ -150,9 +161,12 @@ def reformat_resume(content):
                     3. Work History: Include dates, company, title, environment, job description, and responsibilities for each job. Provide details on projects related to each job.
                     4. Projects: For each project, include client, designation, environment, description, and responsibilities.
                         -While parsing the description, roles & responsibilities from the resume, ensure that all details are accurately captured. And also make sure that none of the details are missed out, no matter how small or long they are, you have to format each and every line of the resume as it is. You are not allowed to change the content of the resume, also don't summarize the content.
-                        -Date: MM/YY - MM/YY (Total Months) and calculate the total months and set 'Present' if applicable. If the candidate is currently working, ensure all responsibilities are written in the present tense. If the candidate is no longer working, ensure all responsibilities are written in the past tense. Double-check for consistent tense usage across all responsibilities.
+                        -Date: MM/YY - MM/YY (Total Months) and calculate the total months or set 'Present' if applicable. If the candidate is currently working, ensure all responsibilities are written in the present tense. If the candidate is no longer working, ensure all responsibilities are written in the past tense. Double-check for consistent tense usage across all responsibilities.
                     5. Education: List qualifications in a structured format.
                     6. Certification/Training: Include all relevant certifications and training.
+                    7. Additionally I have a very critical requirement of grammatical precision, so you have to make sure that the content is grammatically correct and there are no tense errors in the content. For example, if the candidate is currently working, all responsibilities should be written in the present tense. If the candidate is no longer working, all responsibilities should be written in the past tense.
+                        - Be sure to double-check for consistent tense usage across the whole resume.
+                        - If the resume is not grammatically correct, you have to check the content and correct it as per the grammatical rules. Be very much careful about the existing content, you are not allowed to change the content, you can only correct the grammatical errors, as the output is used for official purpose directly to the clients.
 
                 Formatting Rules:
                     - Use `<h2>` tags for section titles.
@@ -179,8 +193,20 @@ def reformat_resume(content):
 
     if "```html" in reply and "```" in reply:
         reply = reply.replace("```html", "").replace("```", "").strip()
-
+    if keywords:
+        return wrap_keywords_in_b_tags(reply, keywords)
     return reply
+
+
+# /////////////////////////// DOCX to HTML ///////////////////////////
+
+# Constants
+FONT_NAME = "Times New Roman"
+LOGO_PATH = "kyralogo.png"
+CONTACT_INFO = """3673 Coolidge Ct.,
+Tallahassee, FL 32311
+Phone: (850) 459-5854
+Email: vpatel@KyraSolutions.com"""
 
 
 def add_header_with_logo_and_contact(doc):
@@ -189,37 +215,31 @@ def add_header_with_logo_and_contact(doc):
         header.is_linked_to_previous = False
 
         # Create table with 1 row and 2 columns
-        table = header.add_table(1, 2, width=Inches(8))
+        table = header.add_table(1, 2, width=Cm(20.32))
         table.alignment = WD_ALIGN_PARAGRAPH.LEFT
-        table.columns[0].width = Inches(3)  # Adjust column width for the logo
-        table.columns[1].width = Inches(5)  # Adjust column width for the contact info
+        table.columns[0].width = Cm(7.62)  # Adjust column width for the logo
+        table.columns[1].width = Cm(12.7)  # Adjust column width for the contact info
 
         # Left cell for logo
         left_cell = table.cell(0, 0)
         left_cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
-        image_path = "kyralogo.png"
-        if os.path.exists(image_path):
+        if os.path.exists(LOGO_PATH):
             paragraph = left_cell.paragraphs[0]
             run = paragraph.add_run()
             run.add_picture(
-                image_path, width=Cm(4.67), height=Cm(2.3)
+                LOGO_PATH, width=Cm(4.67), height=Cm(2.3)
             )  # Adjust logo size
             paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
         else:
-            print(f"Logo file not found at {image_path}")
+            print(f"Logo file not found at {LOGO_PATH}")
 
         # Right cell for contact info
         right_cell = table.cell(0, 1)
         right_cell.vertical_alignment = WD_ALIGN_VERTICAL.CENTER
-        contact_info = """3673 Coolidge Ct.,
-        Tallahassee, FL 32311
-        Phone: (850) 459-5854
-        Email: vpatel@KyraSolutions.com"""
-
         contact_paragraph = right_cell.paragraphs[0]
-        contact_run = contact_paragraph.add_run(contact_info)
+        contact_run = contact_paragraph.add_run(CONTACT_INFO)
         contact_run.font.size = Pt(10)
-        contact_run.font.name = "Times New Roman"
+        contact_run.font.name = FONT_NAME
         contact_paragraph.alignment = (
             WD_ALIGN_PARAGRAPH.RIGHT
         )  # Align text to the right
@@ -229,13 +249,146 @@ def add_header_with_logo_and_contact(doc):
 
     # Set margins
     for section in doc.sections:
-        section.top_margin = Inches(1)
-        section.left_margin = Inches(0.5)
-        section.right_margin = Inches(0.5)
+        section.top_margin = Cm(2.54)
+        section.left_margin = Cm(1.27)
+        section.right_margin = Cm(1.27)
 
     # Remove extra space before/after paragraphs
     doc.styles["Normal"].paragraph_format.space_before = Pt(0)
     doc.styles["Normal"].paragraph_format.space_after = Pt(0)
+
+
+def add_paragraph(doc, text, style=None, bold=False, alignment=None, color=None):
+    p = doc.add_paragraph(text, style=style)
+    if alignment:
+        p.alignment = alignment
+    run = p.runs[0]
+    run.bold = bold
+    run.font.color.rgb = color if color else RGBColor(0, 0, 0)  # Set text color
+    run.font.name = FONT_NAME  # Set font to Times New Roman
+    run.font.size = Pt(10)  # Set font size to 10
+
+
+def add_list_item(doc, element, indent):
+    p = doc.add_paragraph(style="List Bullet")
+    for child in element.children:
+        handle_element(doc, child, p)
+    p.paragraph_format.left_indent = Cm(indent)  # Adjust the indent as needed
+
+
+def handle_element(doc, element, parent_paragraph=None):
+    if isinstance(element, str):
+        if parent_paragraph:
+            run = parent_paragraph.add_run(element)
+            run.font.name = FONT_NAME
+            run.font.size = Pt(10)
+            run.font.color.rgb = RGBColor(0, 0, 0)
+        return
+
+    # Handle <b> and <strong> tags for bold text
+    if element.name in ["b", "strong"]:
+        if parent_paragraph:
+            run = parent_paragraph.add_run(element.get_text())
+            run.bold = True
+            run.font.name = FONT_NAME
+            run.font.size = Pt(10)  # Set font size to 10
+            run.font.color.rgb = RGBColor(0, 0, 0)
+            if element.name == "strong":
+                parent_paragraph.paragraph_format.left_indent = Cm(0.64)
+                parent_paragraph.paragraph_format.space_before = Pt(12)
+                parent_paragraph.paragraph_format.space_after = Pt(12)
+        else:
+            add_paragraph(doc, element.get_text(), bold=True)
+        return
+
+    if element.name == "h1":
+        add_paragraph(
+            doc, element.get_text(), bold=True, alignment=WD_ALIGN_PARAGRAPH.CENTER
+        )
+    elif element.name == "role_title":
+        add_paragraph(
+            doc,
+            element.get_text(),
+            bold=True,
+            alignment=WD_ALIGN_PARAGRAPH.CENTER,
+            color=RGBColor(0, 0, 255),
+        )
+    elif element.name == "h2":
+        p = doc.add_paragraph(element.get_text())
+        p.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        p_format = p.paragraph_format
+        p_format.space_before = Pt(12)  # Add space before h2
+        p_format.space_after = Pt(12)  # Add space after h2
+        run = p.runs[0]
+        run.bold = True
+        run.font.color.rgb = RGBColor(0, 0, 0)  # Set text color to black
+        run.font.name = FONT_NAME  # Set font to Times New Roman
+        run.font.size = Pt(10)  # Set font size to 10
+    elif element.name == "h3":
+        add_paragraph(doc, element.get_text(), style="Heading 2")
+    elif element.name == "h4":
+        add_paragraph(doc, element.get_text(), style="Heading 3")
+    elif element.name == "p":
+        p = doc.add_paragraph()
+        for child in element.children:
+            handle_element(doc, child, p)
+    elif element.name == "table":
+        # Create table with a specific number of columns (based on <th> tags)
+        table = doc.add_table(
+            rows=1, cols=len(element.find_all("th")), style="Table Grid"
+        )
+
+        # Disable autofit to allow manual control over the column widths
+        table.autofit = False
+
+        # Set the column widths (e.g., 1 inch for each column, adjust as needed)
+        for column in table.columns:
+            for cell in column.cells:
+                cell.width = Cm(2.54)  # Adjust column width as needed
+
+        # Set header row with custom font and size
+        hdr_cells = table.rows[0].cells
+        for idx, th in enumerate(element.find_all("th")):
+            hdr_cells[idx].text = th.get_text()
+            for paragraph in hdr_cells[idx].paragraphs:
+                for run in paragraph.runs:
+                    run.font.size = Pt(10)  # Set font size to 10pt
+                    run.font.name = FONT_NAME  # Set font to Times New Roman
+
+        # Add table rows and handle table data
+        for tr in element.find_all("tr")[1:]:
+            row_cells = table.add_row().cells
+            for idx, td in enumerate(tr.find_all("td")):
+                cell_paragraph = row_cells[idx].paragraphs[0]
+                handle_element(doc, td, cell_paragraph)
+
+                # Align paragraph and vertically center content in each cell
+                row_cells[idx].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.LEFT
+                row_cells[idx].vertical_alignment = WD_ALIGN_VERTICAL.CENTER
+
+        # Apply indentation to the table (e.g., 1 inch indent)
+        tbl = table._tbl  # Access the underlying table element
+        tblPr = tbl.tblPr  # Get the table properties
+        tblInd = OxmlElement("w:tblInd")  # Create table indentation element
+        tblInd.set(qn("w:w"), "500")  # Set indentation value in twips (1440 = 1 inch)
+        tblInd.set(qn("w:type"), "dxa")  # Set measurement type to dxa (twips)
+
+        # Append the indentation element to the table properties
+        tblPr.append(tblInd)
+    elif element.name in ["ul", "ol"]:
+        indent = 1.27
+        if element.name == "ol":
+            indent = 2.12
+        for li in element.find_all("li"):
+            add_list_item(doc, li, indent)
+        # Add space after the list
+        p = doc.add_paragraph()
+        p.paragraph_format.space_after = Pt(12)
+    elif element.name == "br":
+        doc.add_paragraph()
+    else:
+        for child in element.children:
+            handle_element(doc, child, parent_paragraph)
 
 
 def convert_html_to_docx(html_content):
@@ -244,146 +397,14 @@ def convert_html_to_docx(html_content):
 
     add_header_with_logo_and_contact(doc)
 
-    def add_paragraph(
-        text, style=None, bold=False, italic=False, underline=False, alignment=None
-    ):
-        p = doc.add_paragraph(text, style=style)
-        if alignment:
-            p.alignment = alignment
-        run = p.runs[0]
-        run.bold = bold
-        run.italic = italic
-        run.underline = underline
-        run.font.color.rgb = RGBColor(0, 0, 0)  # Set text color to black
-        run.font.name = "Times New Roman"  # Set font to Times New Roman
-        run.font.size = Pt(10)  # Set font size to 10
-
-    def add_list_item(text, list_type):
-        if list_type == "ul":
-            p = doc.add_paragraph()
-            run = p.add_run("▪\t" + text)  # Use a square bullet character
-            run.font.size = Pt(10)  # Set font size to 10
-            run.font.color.rgb = RGBColor(0, 0, 0)  # Set text color to black
-            run.font.name = "Times New Roman"  # Set font to Times New Roman
-            p.paragraph_format.left_indent = Inches(0.25)  # Adjust the indent as needed
-        elif list_type == "ol":
-            p = doc.add_paragraph()
-            run = p.add_run("▪\t" + text)  # Use a square bullet character
-            run.font.size = Pt(10)  # Set font size to 10
-            run.font.color.rgb = RGBColor(0, 0, 0)  # Set text color to black
-            run.font.name = "Times New Roman"  # Set font to Times New Roman
-            p.paragraph_format.left_indent = Inches(0.50)  # Adjust the indent as needed
-        else:
-            p = doc.add_paragraph(text)
-            run = p.runs[0]
-            run.font.size = Pt(10)  # Set font size to 10
-            run.font.color.rgb = RGBColor(0, 0, 0)  # Set text color to black
-            run.font.name = "Times New Roman"  # Set font to Times New Roman
-
-    def handle_element(element, parent_paragraph=None):
-        if isinstance(element, str):
-            return
-
-        if element.name == "h1":
-            add_paragraph(
-                element.get_text(), bold=True, alignment=WD_ALIGN_PARAGRAPH.CENTER
-            )
-        elif element.name == "role_title":
-            add_paragraph(
-                element.get_text(), bold=True, alignment=WD_ALIGN_PARAGRAPH.CENTER
-            )
-        elif element.name == "h2":
-            p = doc.add_paragraph(element.get_text())
-            p.alignment = WD_ALIGN_PARAGRAPH.LEFT
-            p_format = p.paragraph_format
-            p_format.space_before = Pt(12)  # Add space before h2
-            p_format.space_after = Pt(12)  # Add space after h2
-            run = p.runs[0]
-            run.bold = True
-            run.font.color.rgb = RGBColor(0, 0, 0)  # Set text color to black
-            run.font.name = "Times New Roman"  # Set font to Times New Roman
-            run.font.size = Pt(10)  # Set font size to 10
-        elif element.name == "h3":
-            add_paragraph(element.get_text(), style="Heading 2")
-        elif element.name == "h4":
-            add_paragraph(element.get_text(), style="Heading 3")
-        elif element.name == "p":
-            p = doc.add_paragraph()
-            for child in element.children:
-                if child.name == "strong":
-                    run = p.add_run(child.get_text())
-                    run.bold = True
-                    run.font.name = "Times New Roman"
-                    run.font.size = Pt(10)  # Set font size to 10
-                    run.font.color.rgb = RGBColor(0, 0, 0)
-                    p.paragraph_format.left_indent = Inches(0.25)
-                    p.paragraph_format.space_before = Pt(12)
-                    p.paragraph_format.space_after = Pt(12)
-                else:
-                    run = p.add_run(child.get_text())
-                    run.font.name = "Times New Roman"
-                    run.font.size = Pt(10)  # Set font size to 10
-                    run.font.color.rgb = RGBColor(0, 0, 0)
-
-        elif element.name == "strong":
-            if parent_paragraph:
-                run = parent_paragraph.add_run(element.get_text())
-                run.bold = True
-                run.font.name = "Times New Roman"
-                run.font.size = Pt(10)  # Set font size to 10
-                run.font.color.rgb = RGBColor(0, 0, 0)
-            else:
-                add_paragraph(element.get_text(), bold=True)
-        elif element.name == "em":
-            add_paragraph(element.get_text(), italic=True)
-        elif element.name == "u":
-            add_paragraph(element.get_text(), underline=True)
-        elif element.name == "table":
-            table = doc.add_table(
-                rows=1, cols=len(element.find_all("th")), style="Table Grid"
-            )
-            table.autofit = True
-            hdr_cells = table.rows[0].cells
-            for idx, th in enumerate(element.find_all("th")):
-                hdr_cells[idx].text = th.get_text()
-                for paragraph in hdr_cells[idx].paragraphs:
-                    for run in paragraph.runs:
-                        run.font.size = Pt(10)  # Set font size to 10
-                        run.font.name = "Times New Roman"  # Set font to Times New Roman
-
-            for tr in element.find_all("tr")[1:]:
-                row_cells = table.add_row().cells
-                for idx, td in enumerate(tr.find_all("td")):
-                    row_cells[idx].text = td.get_text()
-                    row_cells[idx].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.LEFT
-                    row_cells[idx].vertical_alignment = WD_ALIGN_VERTICAL.CENTER
-                    for paragraph in row_cells[idx].paragraphs:
-                        for run in paragraph.runs:
-                            run.font.size = Pt(10)  # Set font size to 10
-                            run.font.name = (
-                                "Times New Roman"  # Set font to Times New Roman
-                            )
-        elif element.name == "ul" or element.name == "ol":
-            for li in element.find_all("li"):
-                add_list_item(li.get_text(), element.name)
-            # Add space after the list
-            p = doc.add_paragraph()
-            p.paragraph_format.space_after = Pt(12)
-        elif element.name == "br":
-            doc.add_paragraph("")
-        else:
-            for child in element.children:
-                if hasattr(child, "children"):
-                    handle_element(child, parent_paragraph)
-                else:
-                    add_paragraph(child)
-
     for element in soup.body:
-        handle_element(element)
+        handle_element(doc, element)
 
     return doc
+    # doc.save(docx_filename)
 
 
+# //////////////////////////////////////////////////////////////////////
 def read_pdf(file_path):
     """Reads a .pdf file and returns its content as a string.
 
@@ -485,7 +506,9 @@ st.write(
 )
 
 api_key = st.text_input("Enter your OpenAI API key:", type="password")
+keywords_input = st.text_input("Enter keywords (comma-separated)")
 uploaded_file = st.file_uploader("Choose a file", type=["docx", "pdf"])
+keywords = [keyword.strip() for keyword in keywords_input.split(",") if keyword.strip()]
 
 if uploaded_file is not None:
     try:
@@ -514,37 +537,21 @@ if uploaded_file is not None:
         cleaned_resume_content = clean_text(resume_content)
 
         with st.spinner("Reformatting resume..."):
-            formatted_resume = reformat_resume(cleaned_resume_content)
+            formatted_resume = reformat_resume(cleaned_resume_content, keywords)
 
-        sections = formatted_resume.split("\n\n")
-        edited_sections = []
+        final_formatted_doc = convert_html_to_docx(formatted_resume)
 
-        st.subheader("Edit Formatted Resume Content:")
-        for i, section in enumerate(sections):
-            if section.strip():
-                section_title = section.split("\n")[0]
-                section_content = "\n".join(section.split("\n")[1:])
-                edited_content = st.text_area(
-                    f"{section_title}:", section_content, height=200, key=f"section_{i}"
-                )
-                edited_sections.append(f"{section_title}\n{edited_content}")
+        # Save as DOCX
+        docx_buffer = io.BytesIO()
+        final_formatted_doc.save(docx_buffer)
+        docx_buffer.seek(0)
 
-        final_formatted_resume = "\n\n".join(edited_sections)
-
-        if st.button("Generate Final Resume"):
-            final_formatted_doc = convert_html_to_docx(final_formatted_resume)
-
-            # Save as DOCX
-            docx_buffer = io.BytesIO()
-            final_formatted_doc.save(docx_buffer)
-            docx_buffer.seek(0)
-
-            st.download_button(
-                label="Download Final Formatted Resume (DOCX)",
-                data=docx_buffer,
-                file_name="Final_Formatted_Resume.docx",
-                mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            )
+        st.download_button(
+            label="Download Final Formatted Resume (DOCX)",
+            data=docx_buffer,
+            file_name="Final_Formatted_Resume.docx",
+            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        )
 
     except Exception as e:
         st.error(f"An error occurred: {str(e)}")
