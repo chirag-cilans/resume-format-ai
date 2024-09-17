@@ -16,6 +16,15 @@ from docx.oxml.ns import qn
 from docx.shared import Cm, Inches, Pt, RGBColor
 from docx2pdf import convert
 from openai import OpenAI
+import pythoncom
+
+# Constants
+FONT_NAME = "Times New Roman"
+LOGO_PATH = "kyralogo.png"
+CONTACT_INFO = """3673 Coolidge Ct.,
+Tallahassee, FL 32311
+Phone: (850) 459-5854
+Email: vpatel@KyraSolutions.com"""
 
 
 # Initialize the OpenAI client
@@ -53,13 +62,496 @@ def wrap_keywords_in_b_tags(text, keywords):
 
 
 def reformat_resume(content, keywords):
+
+    formatted_resume = """
+Chitramalini Sathiraju
+Business Analyst
+
+Please Note: Chitramalini is currently based in Folsom, CA, and is ready to relocate to Tallahassee upon
+receiving an offer.
+PROFESSIONAL SUMMARY
+ Multi-Certified Business Analyst/Quality Assurance professional with 16 years of experience
+in the IT Industry.
+ Experience working with PEGA Systems, Client/Server, Web, and ERP, Salesforce - CRM, and
+Guidewire applications.
+ Experience working with the State of West Virginia and State of Maryland.
+ Proficient in complex, Agile, Scrum, V, and Waterfall methodologies.
+ Experience in Requirements Capture, Requirements Categorization, Requirements
+Prioritization, Requirements Documentation, Business Rules, stakeholder analysis, Gap
+analysis and Impact analysis.
+ Good experience in Interface or API testing with Postman, SOAP UI tools, batch testing with Win
+SCP, and Notepad++, creating, modifying, and enhancing manual Test cases, and Data migration
+applications from legacy systems to As-IS systems.
+ Experience in entire QA life cycle activities, testing concepts, Bug Tracking, Root Cause
+Analysis, Defect Analysis, Project Documentation, Designing, Developing, and Generating
+Reports, interacting with business analysts, developers, and technical support teams and helping
+them in baselining the requirement specifications, maintaining support documents, QA Sign-off
+Documents, maintaining Status Reports, creating Requirements Traceability Matrix to ensure
+comprehensive test coverage of requirements, preparation of Test plans, Test procedures- and
+Manual Test Scenarios.
+ Well understanding of Software Development Life Cycle (SDLC), Software Testing Life Cycle
+(STLC), Requirements Life Cycle, and Bug Life Cycle methodologies.
+ Experience in developing SQL queries for backend database testing, and testing applications
+migrating from .Net platform to JAVA platform.
+TECHNICAL SKILLS
+Operating Systems Windows 95, 98, XP/2000/NT, MS-DOS, UNIX
+Languages C, C++, C#, JAVA, PEGA
+GUI VB6.0
+ERP Mainframes, SAP
+Database Oracle10, DB Visualizer, Data Trek
+Web Technologies VBScript, JavaScript, HTML, VB.Net, ASP. Net, XML, PEGA
+Package MS-Office
+Testing Tools QTP12, Quality Center12, LoadRunner11.52, Selenium-Web-Driver, JIRA,
+
+SQUIDS, RALLY, ALM, TDD, Microsoft, AZURE, TFS
+
+CRM Guidewire, Salesforce, Business Analytics
+Analytics Tools Rapid Minor
+Diagramming Tools Axure RP 10
+EDUCATION QUALIFICATION
+ MSc. IT/Vinayaka Mission Deemed University, 2005
+ BSc Computer Science/Osmania University, India,1998
+
+
+CERTIFICATION/TRAINING
+ GAQM Certified Scrum Master (CSM)®
+ SAFe 4 Scrum Master Certificate
+ Safe 4 Agilist Certificate
+ ISEB ISTQB Certified at the foundation level
+ Expert Rating in Software Testing
+ Brain bench in Software Testing
+ MIT No Code AI and Machine Learning Building Data Science Solutions Certificate
+
+WORK HISTORY
+Date: 01/23 - 07/24 (19 Months)
+Company: State of California, Franchise Tax Board, Folsom, CA
+Title: Business Analyst/Quality Analyst
+Tools and Technologies: PEGA, Axure RP 10, DATABASICS, Manual Testing, Report testing API
+testing, Microsoft SQL Server, SoapUI, Postman V9.15.2 WINDOWS 10, Google Chrome, Cisco
+VPN WINSCP5.15.3, Notepad++, Azure, TFS, Teams, TOSCO
+Roles and Responsibilities
+ Requirements Capture - Engage with business owners to capture Epics and User Stories.
+Facilitate workshops.
+ Requirements Categorization - Refine and categorize requirements into Functional &amp; Non-
+functional requirements.
+ Requirements Prioritization - Use MoSCoW methodology to prioritize requirements. Work
+with business change owners and IT suppliers to ensure that requirements are clearly understood
+and necessary information is available.
+ Requirements Documentation - Document requirements catalog, functional specifications,
+Use Case Analysis, and UML artifacts.
+ Responsible for Business Rules - Revise and create new business rules for approvals,
+delegations, and hard-charging and conducted stakeholder analysis and identified and resolved
+Impact/relationship/dependencies/constraints.
+ Coordinated with Test Analysts to develop Testing scenarios, Functional Testing, Regression
+Testing, System Integration Testing, and User Acceptance Testing, with developers for
+requirement development.
+ Tracked Change requests, defects, and test coverage, and published Defect Status Reports using
+TFS.
+ Ensured strategic objectives, strategy definition, and target models are clear, documented, and
+collectively agreed upon.
+ Tested PEGA environment and customized the PEGA application as per the client&#39;s requirements,
+Integration of PEGA systems with Standalone Forms (SAF), Governance Process Rules Engine
+(Rules), Case Management (CM), Return Analysis (RA), Return Verification (RV), Collections,
+Notices, CX applications, iCapture, ETS Database and execute the Workflows.
+ Performed agile activities using the DATABASICS tool.
+ Managed client information for business communications using Microsoft Dynamics 365.
+
+Date: 06/22 - 12/22 (07 Months)
+Company: United Health Group, Minneapolis, MN
+Client: Child Support State of West Virginia
+Title: Analyst/Tester
+Tools and Technologies: Sales Force.com, Force.com platform, Service Cloud, Data Loader, e-
+commerce, ALM, Rally, TDD, Deltek, Manual Testing, Report testing API testing, Microsoft SQL
+Server, SoapUI, Postman V9.15.2 WINDOWS 10, Google Chrome, Cisco VPN WINSCP5.15.3,
+Notepad++, FACETS TriZetto
+Roles and Responsibilities
+ Validated Data after data migration, KPI reports data with AS-IS system, the response and
+result XMLs, JSON script issues in Postman.
+ Involved in testing, Batch testing, API interfaces, and Web Services, analyzing migration issues
+in Agile methodologies.
+ Trained Maryland county users in using our applications.
+ Mentored the Tester, arranging team meetings, getting updates from each person, forwarding
+weekly reports to all the team members and managers, interacting with stakeholders in the initial
+stage until handed over automation tester, and forwarding release reports to appropriate people.
+ Tracked requirements, and test coverage using VersionOne tool, defects, and published Defect
+Status Reports using JIRA.
+ Created SIT and UAT test cases for functional testing and regression testing.
+ Coordinated with Test Analysts to develop Testing scenarios, Functional Testing, Regression
+Testing, System Integration Testing, and User Acceptance Testing.
+ Tested Child Support (CSMS), etc modules with sanity flows with migrated data for releasing it to
+West Virginia counties.
+ Prepared inbound files and Outbound files.
+ Performed agile activities using the Deltek tool.
+ Managed client information for business communications using Microsoft Dynamics 365.
+ Supported county users when they were facing issues.
+
+
+Date: 01/19 - 05/22 (41 Months)
+Company: MDThink, Linthicum Heights, MD
+Client: CJAMS State of Maryland
+Title: Analyst/Tester
+Tools and Technologies: Sales Force.com, Force.com platform, Service Cloud, Data Loader,
+ecommerce, JIRA, VersionOne, Digital.ai Agility, Manual Testing, Report testing API testing,
+DBeaver /Postgres admin, SoapUI, Postman V9.15.2 WINDOWS 10, Google Chrome, Open Vpn,
+Zscaler, WINSCP5.15.3, Notepad++
+Roles and Responsibilities
+ Tested Child Welfare (CWS), Child Support (CSMS), etc modules in Agile methodology with
+sanity flows with migrated data for releasing it to Maryland counties.
+ Validated Data after data migration, KPI reports data with AS-IS system, the response and
+result XMLs, JSON script issues in Postman.
+ Mentored the Tester, arranging team meetings, getting updates from each person, forwarding
+weekly reports to all the team members and managers, interacting with stakeholders in the initial
+stage until handed over automation tester, and forwarding release reports to appropriate people.
+ Tracked requirements, and test coverage using the VersionOne tool, defects, and published Defect
+Status Reports using JIRA.
+ Created SIT and UAT test cases for functional testing and regression testing.
+ Coordinated with Test Analysts to develop Testing scenarios, Functional Testing, Regression
+Testing, System Integration Testing, and User Acceptance Testing.
+ Prepared inbound files and Outbound files.
+ Involved in testing, Batch testing, API interfaces, and Web Services, analyzing migration issues.
+ Performed agile activities using the Digital.ai Agility tool.
+ Managed client information for business communications using Microsoft Dynamics 365.
+ Trained Maryland county users in using our applications.
+ Supported county users when they are facing issues.
+
+
+Date: 03/17 - 12/18 (22 Months)
+Company: CORVUS, Greater Pittsburgh Area
+Client: Best Nomos
+Title: Senior QA consultant/Team Lead
+Tools and Technologies: eCommerce platform, Test Tracking Tool, PTWeb, DOORS, Manual
+Testing, Mac OS, Safari, Firefox, ALM and RALLY
+Roles and Responsibilities
+ Responsible for the preparation of the Test plan, test approach, Business Requirement
+document, and deliverables.
+ Mentored Tester, arranging team meetings, getting updates from each person, forwarding weekly
+reports to all the team members and managers, interacting with stakeholders in the initial stage
+until handed over automation tester, and forwarding release reports to appropriate people.
+ Tracked requirements using the DOORS tool, the defects, and published Defect Status Reports
+using PTWeb, test coverage using RTM, TTT.
+ Created test cases for functional testing and regression testing, user acceptance testing using
+Excel.
+ Coordinated with Test Analysts to develop Testing scenarios, Functional Testing, Regression
+Testing, System Integration Testing, and User Acceptance Testing.
+ Tested CORVUS14, CORVUS Beam Utilities14, CORVUS Configuration Manager14, Corvus
+User Manager14, and CORVUS Structure Set Editor modules for Forward planning, Inverse
+planning, Treatment planning process in the integration with beam parameters and dose
+distribution in modules in Waterfall methodology.
+
+Date: 01/15 - 02/17 (26 Months)
+Company: SOPHIA, Englewood, CO
+Client: Tele Tech
+Title: Senior QA consultant/Team Lead
+Tools and Technologies: .Net, ALM, and RALLY
+Roles and Responsibilities
+ Prepared the Test plan, test approach, and deliverables.
+ Created, modified, and enhanced manual Test cases.
+ Created test cases for functional testing and regression testing, workflow diagrams for
+development references, and data mapping.
+ Tested Cards and Payments module for the Card Determination process in the integration with
+Customer Management and Payment Type modules in Waterfall methodology.
+ Guided Tester, arranging team meetings, getting updates from each person, forwarding weekly
+reports to all the team members and managers, interacting with stakeholders in the initial stage
+until handed over automation tester, and forwarding release reports to appropriate people.
+ Coordinated with Test Analysts to develop Testing scenarios, Functional Testing and Regression
+Testing.
+ Tracked the defects, published Defect Status Reports using ALM, test coverage using RALLY.
+
+Date: 05/13 - 12/14 (20 Months)
+Company: Enterprise Pricing Request System (ePRS), TN
+Client: FedEx
+Title: Technical Consultant/Team Lead
+Tools and Technologies: E-commerce platform, Java, JSP, ASP servlets, QC12.0
+Roles and Responsibilities
+ Analyzed the requirements from the Business Requirements, Functional Requirements, and
+High-level design documents, and test results to make sure requirements have been met and
+existing system requirement still holds.
+ Guided Tester, arranging team meetings, getting updates from each person, forwarding weekly
+reports to all the team members and managers, interacting with stakeholders in the initial stage
+until handed over to the Client-side Test Manager, and forwarding release reports to appropriate
+people.
+ Used QC for test management i.e. Defect management, Bug Reporting, and Bug tracking.
+ Coordinated and sent daily status to Project Managers.
+ Created, modified, and enhanced manual Test cases in Agile methodology.
+Date: 08/12 - 04/13 (09 Months)
+Company: Davis Negative Files, San Jose, CA
+Client: PayPal
+Title: Team Lead
+Tools and Technologies: Java, UNIX, JIRA, Java, UNIX, Data Trek
+Roles and Responsibilities
+ Developed test plans, test cases, and test scenarios to map Integration Testing, System Testing,
+and User Acceptance Testing to test business requirements and design documents according to
+the BRD&#39;s &amp; FRDs.
+ Monitored and tracked priority defects on a day-to-day basis, wrote positive and negative test
+cases, improved traceability, reduced project risk, and increased the quality of the application in
+Agile methodology.
+ Responsible for managing the change request process related to testing.
+ Involved in execution of SIT and UAT, Cycle 1, Cycle 2 &amp; Cycle 3 Testing, daily meetings to
+review the progress of testing as well as discuss the status of defects with offshore people in the
+USA.
+ Responsible for Coordination and communication between US Clients and SA testing Effort.
+ Used HP Quality Center (QC) to Report bugs using the defect tracking system and verify fixes for
+reserving, executing test cases, defect tracking, and complete test management, to get the status
+reports of all the test cases &amp;test scripts that are executed during the testing process, re-testing of
+defects corrected and reported.
+
+Date: 10/11 - 07/12 (10 Months)
+Company: Retail Staffing Administration, Atlanta, GA
+Client: Home Depot
+Title: QA Consultant
+Tools and Technologies: E-commerce platform, Java, .Net and SOA, QC10, DB Visualizer and QTP
+Roles and Responsibilities
+ Developed test cases, and test scenarios to map Integration Testing, System Testing, and User
+Acceptance Testing to test business requirements and design documents according to the BRD&#39;s
+FRDs.
+ Used HP Quality Center (QC) to Report bugs using the defect tracking system and verify fixes for
+reserving, executing test cases, defect tracking, and complete test management, to get the status
+reports of all the test cases &amp; test scripts that are executed during the testing process, re-testing of
+defects corrected and reported.
+ Responsible for managing the change request process related to testing.
+ Involved in execution of SIT and UAT, Cycle 1, Cycle 2 &amp; Cycle 3 Testing, daily meetings to
+review the progress of testing as well as discuss the status of defects with offshore people in the
+USA.
+ Responsible for Coordination and communication between US Clients and SA testing Effort.
+ Monitored and tracked priority defects on a day-to-day basis, wrote positive and negative test
+cases, improved traceability, reduced project risk, and increased the quality of the application in
+Agile methodology.
+
+"""
+
+    unformatted_resume = """
+    Chitramalini Sathiraju
+Email: chitra.s@selectiva.io
+Phone: 412-652-2565| Alt: 408-669-5160
+PROFESSIONAL SUMMARY:
+ Multi-Certified Business Analyst/Quality Assurance professional with 16 years of experience in
+the IT Industry.
+ Worked with PEGA Systems, Client/Server, Web, and ERP, Salesforce - CRM, and Guidewire
+applications.
+ Well understanding of Software Development Life Cycle (SDLC), Software Testing Life Cycle
+(STLC), Requirements Life Cycle, and Bug Life Cycle methodologies. 
+ Proficient in complex, Agile, Scrum, V, and Waterfall methodologies.
+ Involved in Requirements Capture, Requirements Categorization, Requirements Prioritization,
+Requirements Documentation, Business Rules, stakeholder analysis, Gap analysis and Impact
+analysis
+ Involved in Sprint meetings and reviews- Entry criteria, Exit criteria, task definition, and
+validation criteria.
+ Involved in sprint retrospective meetings.
+ Good experience in Interface or API testing with Postman, SOAP UI tools, batch testing with Win
+SCP, and Notepad++, creating, modifying, and enhancing manual Test cases, and Data migration
+applications from legacy systems to As-IS systems.
+ Experienced in entire QA life cycle activities, testing concepts, Bug Tracking, Root Cause
+Analysis, Defect Analysis, Project Documentation, Designing, Developing, and Generating
+Reports, interacting with business analysts, developers, and technical support teams and helping
+them in baselining the requirement specifications, maintaining support documents, QA Sign-off
+Documents, maintaining Status Reports, creating Requirements Traceability Matrix to ensure
+comprehensive test coverage of requirements, preparation of Test plans, Test procedures- and
+Manual Test Scenarios. Functional testing of applications, preparing and executing Test Cases
+and Test Reports defect reporting, and Test Case Review.
+ Coordination and communicated with USA Clients and SA testing efforts, offshore team and
+attended Environment, Status, and Defect calls every day to keep the projects online
+ Experience in developing SQL queries for backend database testing, and testing applications
+migrating from .Net platform to JAVA platform.
+TECHNICAL SKILLS:
+ Operating Systems: Windows 95, 98, XP/2000/NT, MS-DOS, UNIX.
+ Languages: C, C++, C#, JAVA, PEGA
+ GUI : VB6.0
+ ERP : Mainframes, SAP,
+ Database: Oracle10, DB Visualizer, Data Trek
+ Web Technologies: VBScript, JavaScript, HTML, VB.Net, ASP. Net, XML, PEGA
+ Package: MS-Office
+ Testing Tools: QTP12, Quality Center12, LoadRunner11.52
+Selenium-Web-Driver, JIRA, SQUIDS, RALLY, ALM, TDD, Microsoft, AZURE, TFS
+ CRM : Guidewire, Salesforce, Business Analytics
+ Analytics Tools : Rapid Minor
+ Diagramming Tools: Axure RP 10
+PROFESSIONAL EXPERIENCE:
+Franchise Tax Board, State of California Dec’ 2022 – July
+2024
+Position: Business Analyst/Quality Analyst
+Responsibilities:
+ Requirements Capture – Engage with business owners to capture Epics and User Stories.
+Facilitate workshops.
+ Requirements Categorization – Refine and categorize requirements into Functional &amp; Non-
+functional requirements.
+ Requirements Prioritization – Use MoSCoW methodology to prioritize requirements. Work with
+business change owners and IT suppliers to ensure that requirements are clearly understood and
+necessary information is available.
+ Requirements Documentation – Document requirements catalog, functional specifications, Use
+Case Analysis, and UML artifacts.
+ Business Rules – Revise and create new business rules for approvals, delegations, and hard-
+charging. Conduct stakeholder analysis and identify and resolve
+Impact/relationship/dependencies/constraints.
+ Ensure strategic objectives, strategy definition, and target models are clear, documented, and
+collectively agreed upon.
+ Tested PEGA environment and customized the PEGA application as per the client’s
+requirements, Integration of PEGA systems with Standalone Forms (SAF), Governance Process
+Rules Engine (Rules), Case Management (CM), Return Analysis (RA), Return Verification (RV),
+Collections, Notices, CX applications, iCapture, ETS Database and execute the Workflows
+ Coordinated with Test Analysts to develop Testing scenarios, Functional Testing, Regression
+Testing, System Integration Testing, and User Acceptance Testing, with developers for
+requirement development. Tracked Change requests, defects, and test coverage, and published
+Defect Status Reports using TFS
+ Performed agile activities using the DATABASICS tool. Managed client information for business
+communications using Microsoft Dynamics 365
+Environment: PEGA, Axure RP 10, DATABASICS, Manual Testing, Report testing API testing,
+Microsoft SQL Server, SoapUI, Postman V9.15.2 WINDOWS 10, Google Chrome, Cisco VPN
+WINSCP5.15.3, Notepad++, Azure, TFS, Teams, TOSCO.
+United Health Group, Child Support State of West Virginia Jun’ 2022 – Dec 2022
+Position: Analyst/Tester
+Responsibilities:
+ Tracking requirements, test coverage using VersionOne tool, defects, published Defect Status
+Reports using JIRA
+ Created SIT and UAT test cases for the functional testing and regression testing
+ Coordinated with Test Analysts to develop Testing scenarios, Functional Testing, Regression
+Testing, System Integration Testing, User Acceptance Testing
+ Tested Child Support (CSMS), etc modules with sanity flows with migrated data for releasing it
+to West Virginia counties.
+ Validating Data after data migration, KPI reports data with AS-IS system, the response and result
+XMLs, JSON script issues in Postman
+ Prepared inbound files and Outbound files. Involved in testing, Batch testing, API interfaces, and
+Web Services, analyzing migration issues in Agile methodologies.
+ Performed agile activities using the Deltek tool
+ Managed client information for business communications using Microsoft Dynamics 365
+ Training Maryland county users in using our applications
+ Supporting county users when they are facing issues.
+ Mentoring the Tester, arranging team meetings, getting updates from each person, forwarding
+weekly reports to all the team members and managers, interacting with stakeholders in the
+initial stage until handed over automation tester, and forwarding release reports to appropriate
+people.
+Environment: Sales Force.com, Force.com platform, Service Cloud, Data Loader, ecommerce, ALM,
+Rally, TDD, Deltek, Manual Testing, Report testing API testing, Microsoft SQL Server, SoapUI,
+Postman V9.15.2 WINDOWS 10, Google Chrome, Cisco VPN WINSCP5.15.3, Notepad++, FACETS
+TriZetto.
+MDThink, CJAMS State of Maryland Dec’ 2018 – May’ 2022
+Position: Analyst/Tester
+Responsibilities:
+ Tracking requirements, test coverage using VersionOne tool, defects, published Defect Status
+Reports using JIRA
+ Created SIT and UAT test cases for the functional testing and regression testing
+ Coordinated with Test Analysts to develop Testing scenarios, Functional Testing, Regression
+Testing, System Integration Testing, User Acceptance Testing
+ Tested Child Welfare (CWS), Child Support (CSMS), etc modules in Agile methodology with
+sanity flows with migrated data for releasing it to Maryland counties.
+ Validating Data after data migration, KPI reports data with AS-IS system, the response and result
+XMLs, JSON script issues in Postman
+ Prepared inbound files and Outbound files. Involved in testing, Batch testing, API interfaces, and
+Web Services, analyzing migration issues
+ Performed agile activities using the Digital.ai Agility tool
+ Managed client information for business communications using Microsoft Dynamics 365
+ Training Maryland county users in using our applications
+ Supporting county users when they are facing issues.
+ Mentoring the Tester, arranging team meetings, getting updates from each person, forwarding
+weekly reports to all the team members and managers, interacting with stakeholders in the
+initial stage until handed over automation tester, and forwarding release reports to appropriate
+people.
+Environment: Sales Force.com, Force.com platform, Service Cloud, Data Loader, ecommerce, JIRA,
+VersionOne, Digital.ai Agility, Manual Testing, Report testing API testing, DBeaver /Postgres admin,
+SoapUI, Postman V9.15.2 WINDOWS 10, Google Chrome, Open Vpn, Zscaler. WINSCP5.15.3,
+Notepad++.
+CORVUS, Best Nomos, Senior QA consultant/Team Lead Mar’ 2017 – Dec’2018
+Position: Senior QA consultant/Team Lead
+Responsibilities:
+ Preparation of the Test plan, test approach, Business Requirement document, and deliverables
+ Tracking requirements using the DOORS tool, the defects, and published Defect Status Reports
+using PTWeb, test coverage using RTM, TTT
+ Created test cases for functional testing and regression testing, user acceptance testing using
+Excel
+ Coordinated with Test Analysts to develop Testing scenarios, Functional Testing, Regression
+Testing, System Integration Testing, User Acceptance Testing
+ Tested CORVUS14, CORVUS Beam Utilities14, CORVUS Configuration Manager14, Corvus User
+Manager14, and CORVUS Structure Set Editor modules for Forward planning, Inverse planning,
+Treatment planning process in the integration with beam parameters and dose distribution in
+modules in Waterfall methodology.
+ Mentoring Tester, arranging team meetings, getting updates from each person, forwarding
+weekly reports to all the team members and managers, interacting with stakeholders in the
+initial stage until handed over automation tester, and forwarding release reports to appropriate
+people.
+Environment: eCommerce platform, Test Tracking Tool, PTWeb, DOORS, Manual Testing, Mac OS,
+Safari, Firefox, ALM and RALLY
+SOPHIA, Tele Tech, CO Jan’ 2015 – Feb’2017
+Role: Senior QA consultant/Team Lead
+Responsibilities:
+ Preparation of the Test plan, test approach, and deliverables
+ Good experience in creating, modifying, and enhancing manual Test cases
+ Created test cases `for the functional testing and regression testing, workflow diagrams for
+development references, and data mapping
+ Coordinated with Test Analysts to develop Testing scenarios, Functional Testing and Regression
+Testing.
+ Tested Cards and Payments module for the Card Determination process in the integration with
+Customer Management and Payment Type modules in Waterfall methodology.
+ Tracked the defects, published Defect Status Reports using ALM, test coverage using RALLY
+ Guiding Tester, arranging team meetings, getting updates from each person, forwarding weekly
+reports to all the team members and managers, interacting with stakeholders in the initial stage
+until handed over automation tester, and forwarding release reports to appropriate people.
+Environment: .Net, ALM, and RALLY
+Enterprise Pricing Request System (ePRS), FedEx, TN May’2013- Dec’2014
+Role: Technical Consultant/Team Lead
+Responsibilities:
+ Analyzing the requirements from the Business Requirements, Functional Requirements, and
+High-level design documents, and test results to make sure requirements have been met and
+existing system requirement still holds. 
+ Used QC for test management i.e. Defect management, Bug Reporting, and Bug tracking. 
+ Coordinating and sending daily status to Project Managers.
+ Good experience in creating, modifying, and enhancing manual Test cases in Agile methodology
+ Guiding Tester, arranging team meetings, getting updates from each person, forwarding weekly
+reports to all the team members and managers, interacting with stakeholders in the initial stage
+until handed over to the Client-side Test Manager, and forwarding release reports to
+appropriate people.
+Environment: E-commerce platform, Java, JSP, ASP servlets, QC12.0
+Davis Negative Files, PayPal, San Jose, CA Aug’2012-Apr’2013
+Role: Team Lead
+Responsibilities:
+ Develop test plan, test cases, and test scenarios to map Integration Testing, System Testing, and
+User Acceptance Testing to test business requirements and design documents according to the
+BRD&#39;s FRDs. Responsible for managing the change request process related to testing
+ Involved in execution of SIT and UAT, Cycle 1, Cycle 2 &amp; Cycle 3 Testing, daily meetings to
+review the progress of testing as well as discuss the status of defects with offshore people in the
+USA. Coordination and communication between US Clients and SA testing Effort.
+ Used HP Quality Center (QC) to Report bugs using the defect tracking system and verify fixes for
+reserving, executing test cases, defect tracking, and complete test management, to get the
+status reports of all the test cases &amp;test scripts that are executed during the testing process, re-
+testing of defects corrected and reported.
+
+
+ Monitor and track priority defects on a day-to-day basis, write positive and negative test cases,
+improve traceability, reduce project risk, and increase the quality of the application in Agile
+methodology.
+Environment: Java, UNIX, JIRA, Java, UNIX, Data Trek.
+Retail Staffing Administration, Home Depot, Atlanta, GA Oct’2011-Jul’2012
+Role: QA Consultant
+Responsibility:
+ Develop test cases, and test scenarios to map Integration Testing, System Testing, and User
+Acceptance Testing to test business requirements and design documents according to the BRD&#39;s
+FRDs. Responsible for managing the change request process related to testing
+ Involved in execution of SIT and UAT, Cycle 1, Cycle 2 &amp; Cycle 3 Testing, daily meetings to
+review the progress of testing as well as discuss the status of defects with offshore people in the
+USA. Coordination and communication between US Clients and SA testing Effort.
+ Used HP Quality Center (QC) to Report bugs using the defect tracking system and verify fixes for
+reserving, executing test cases, defect tracking, and complete test management, to get the
+status reports of all the test cases &amp;test scripts that are executed during the testing process, re-
+testing of defects corrected and reported.
+ Monitor and track priority defects on a day-to-day basis, write positive and negative test cases,
+improve traceability, reduce project risk, and increase the quality of the application in Agile
+methodology.
+Environment: E-commerce platform, Java, .Net and SOA, QC10, DB Visualizer and QTP
+*2007-2016 - SYTEL PVT -Can provide more experience details on request*
+EDUCATION:
+ MSc. IT/Vinayaka Mission Deemed University-2005
+ BSc Computer Science/Osmania University-1998
+CERTIFICATIONS:
+ GAQM Certified Scrum Master (CSM)®
+ SAFe 4 Scrum Master Certificate
+ Safe 4 Agilist Certificate
+ ISEB ISTQB Certified at the foundation level
+ Expert Rating in Software Testing
+ Brain bench in Software Testing
+ MIT No Code AI and Machine Learning Building Data Science Solutions Certificate
+"""
+
     Format = """
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Candidate Resume</title>
-</head>
 <body>
 
     <h1>Candidate Name</h1>
@@ -85,15 +577,15 @@ def reformat_resume(content, keywords):
         <tbody>
             <tr>
                 <td>Category 1</td>
-                <td>Tools || Technologies</td>
+                <td>Tools & Technologies</td>
             </tr>
             <tr>
                 <td>Category 2</td>
-                <td>Tools || Technologies</td>
+                <td>Tools & Technologies</td>
             </tr>
             <tr>
                 <td>Category 3</td>
-                <td>Tools || Technologies</td>
+                <td>Tools & Technologies</td>
             </tr>
             <!-- Add more rows as needed -->
         </tbody>
@@ -116,11 +608,11 @@ def reformat_resume(content, keywords):
     </ul>
 
 
-    <!-- Strict instruction: Use the format MM/YY - MM/YY (Total Months) and calculate the total months or set 'Present' if applicable. If the candidate is currently working, ensure all responsibilities are written in the present tense. If the candidate is no longer working, ensure all responsibilities are written in the past tense. Double-check for consistent tense usage across all responsibilities. -->
+    <!-- Strict instruction: Use the format MM/YY - MM/YY (Total Months) and calculate the total months & set 'Present' if applicable. If the candidate is currently working, ensure all responsibilities are written in the present tense. for all of the past experiences of candidates, ensure all responsibilities are written in the past tense. Double-check for consistent tense usage across all responsibilities. -->
 
     <h2>WORK HISTORY</h2>
 
-    <strong>Date: MM/YY - MM/YY (Total Months)</strong> 
+    <strong class='Add "Previous experience" or "Present experience" in class based on provide reference date' >Date: MM/YY - MM/YY (Total Months)</strong> 
     <strong>Company: Company Name</strong>
 
         <p><strong>Client:</strong> Client Name</p>
@@ -143,42 +635,56 @@ def reformat_resume(content, keywords):
 </html>
 """
 
+    keywords = []
+
     messages = [
         {
             "role": "system",
             "content": """
-                                You are an expert in resume reformatting, specializing in adhering to predefined templates with high accuracy. Your role involves parsing and reformatting resumes according to a specific format, ensuring all details are captured correctly and presented in a clean, HTML-compatible format. You excel in grammatical precision, avoiding unnecessary details, and adding required prerequisites when needed.
-                                """,
+                                You are an expert in resume formatting, with a specialty in ensuring adherence to predefined templates with high precision. Your task involves accurately parsing and reformatting resumes according to a specified structure. All information must be captured and presented in an organized, HTML-compatible format, while maintaining grammatical accuracy. Your focus is on ensuring no unnecessary details are included and all required components are present.
+                            """,
         },
         {
             "role": "user",
             "content": f"""
-                Please parse the provided resume details according to the following format and deliver the output in HTML format:                           
+                        You are provided with the following resume data to process:
 
-                Instructions:
-                    1. Professional Summary: Craft a concise summary that highlights the candidate's skills and achievements.
-                    2. Technical Skills: List skills in a clear, tabular format.
-                    3. Work History: Include dates, company, title, environment, job description, and responsibilities for each job. Provide details on projects related to each job.
-                    4. Projects: For each project, include client, designation, environment, description, and responsibilities.
-                        -While parsing the description, roles & responsibilities from the resume, ensure that all details are accurately captured. And also make sure that none of the details are missed out, no matter how small or long they are, you have to format each and every line of the resume as it is. You are not allowed to change the content of the resume, also don't summarize the content.
-                        -Date: MM/YY - MM/YY (Total Months) and calculate the total months or set 'Present' if applicable. If the candidate is currently working, ensure all responsibilities are written in the present tense. If the candidate is no longer working, ensure all responsibilities are written in the past tense. Double-check for consistent tense usage across all responsibilities.
-                    5. Education: List qualifications in a structured format.
-                    6. Certification/Training: Include all relevant certifications and training.
-                    7. Additionally I have a very critical requirement of grammatical precision, so you have to make sure that the content is grammatically correct and there are no tense errors in the content. For example, if the candidate is currently working, all responsibilities should be written in the present tense. If the candidate is no longer working, all responsibilities should be written in the past tense.
-                        - Be sure to double-check for consistent tense usage across the whole resume.
-                        - If the resume is not grammatically correct, you have to check the content and correct it as per the grammatical rules. Be very much careful about the existing content, you are not allowed to change the content, you can only correct the grammatical errors, as the output is used for official purpose directly to the clients.
+                        Instructions:
+                        Professional Summary: Create a concise, well-crafted summary of the candidate's skills and accomplishments.
+                        Technical Skills: Present the candidate's skills in a tabular format for clarity.
+                        Work History: For each position, provide the dates, company, title, environment, job description, and responsibilities. For ongoing roles, ensure details (Roles and Responsibilities) are written in the present tense; for past roles, details (Roles and Responsibilities) must be written in the past tense. And also make sure that all information is complete and no details are omitted or missed out.
+                        Provide detailed descriptions for each project, ensuring all responsibilities and roles are fully included without summarization or omission.
+                        Ensure the tense is appropriate for each role:
+                        For ongoing roles: use present tense (e.g., “Developing and maintaining web applications”).
+                        For completed roles: use past tense (e.g., “Developed and maintained web applications”).
+                        Ensure all responsibilities are grammatically correct and that the correct tense is applied consistently throughout.
+                        Projects: For each project, provide the client, designation, environment, description, and responsibilities. Check if any of the client, designation, environment, description, are mentioned in the project details, then keep it blank
+                        Education: Include all relevant educational qualifications in a structured format.
+                        Certifications/Training: List any certifications or training completed.
+                        Consistency Check: After processing, thoroughly review the resume:
+                        Verify that ongoing roles use only present tense.
+                        Verify that past roles use only past tense.
+                        Ensure there are no grammatical inconsistencies or tense errors.
+                        Keyword Highlighting: Bold the words from the provided list by enclosing each instance of those words in <b> tags throughout the resume. Only these specified words should be bolded. But not make it case sensitive.
+                        Formatting Guidelines:
+                        Use <h2> tags for section headings.
+                        Use <p> tags for descriptions.
+                        Use <ul> or <ol> and <li> tags for bullet-pointed lists.
+                        Ensure the format is clear and does not include unnecessary information.
+                        Consistently apply bold formatting to the words from the provided list using <b> tags. Only those words should be bolded.
+                        Validation and Error Handling:
+                        Perform a manual and automated review of the resume to ensure grammatical precision, tense consistency, and correct formatting.
+                        Immediately address any detected errors and revalidate to ensure 100% accuracy.
 
-                Formatting Rules:
-                    - Use `<h2>` tags for section titles.
-                    - Use `<p>` tags for text and descriptions.
-                    - Use `<strong>` tags for any text that needs to be bold.
-                    - Use bullet points for lists, wrapped in `<ul> or <ol>` and `<li>` tags.
-                    - Align sections clearly and avoid adding unnecessary information.
-                                
-                Resume: [{content}]
-                Format: [{Format}]
+                        Giving a reference of the one of the resume
 
-                            """,
+                        Original Resume: [{unformatted_resume}]
+                        Formatted Resume: [{formatted_resume}]
+
+                        Resume: [{content}]
+                        Format: [{Format}]
+                        Word List: [{keywords}]
+                        """,
         },
     ]
 
@@ -199,14 +705,6 @@ def reformat_resume(content, keywords):
 
 
 # /////////////////////////// DOCX to HTML ///////////////////////////
-
-# Constants
-FONT_NAME = "Times New Roman"
-LOGO_PATH = "kyralogo.png"
-CONTACT_INFO = """3673 Coolidge Ct.,
-Tallahassee, FL 32311
-Phone: (850) 459-5854
-Email: vpatel@KyraSolutions.com"""
 
 
 def add_header_with_logo_and_contact(doc):
@@ -489,13 +987,24 @@ def convert_and_read(file_path):
 
 
 def handle_temp_file(uploaded_file, suffix):
-    with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp_file:
-        tmp_file.write(uploaded_file.getvalue())
-        tmp_file_path = tmp_file.name
 
-    resume = convert_and_read(tmp_file_path)
-    os.unlink(tmp_file_path)
-    return resume
+    # Initialize COM environment
+    pythoncom.CoInitialize()
+
+    try:
+        with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp_file:
+            tmp_file.write(uploaded_file.getvalue())
+            tmp_file_path = tmp_file.name
+
+        # Perform the conversion
+        resume = convert_and_read(tmp_file_path)
+
+        # Cleanup
+        os.unlink(tmp_file_path)
+        return resume
+    finally:
+        # Ensure COM environment is uninitialized
+        pythoncom.CoUninitialize()
 
 
 # Streamlit UI
@@ -519,21 +1028,20 @@ if uploaded_file is not None:
             file_type
             == "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         ):
-            file_content = handle_temp_file(uploaded_file, ".docx")
+            resume_content = handle_temp_file(uploaded_file, ".docx")
 
         elif file_type == "application/msword":
-            file_content = handle_temp_file(uploaded_file, ".doc")
+            resume_content = handle_temp_file(uploaded_file, ".doc")
 
         elif file_type == "application/pdf":
             file_content = uploaded_file.getvalue()
+            resume_content = extract_content_from_pdf(io.BytesIO(file_content))
             st.write("PDF file uploaded successfully.")
 
         else:
             st.error("Unsupported file format. Please upload a PDF, DOC, or DOCX file.")
             st.stop()
 
-        # Extract content from PDF
-        resume_content = extract_content_from_pdf(io.BytesIO(file_content))
         cleaned_resume_content = clean_text(resume_content)
 
         with st.spinner("Reformatting resume..."):
